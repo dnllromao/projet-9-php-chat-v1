@@ -6,7 +6,7 @@
 		return;
 	}
 
-	//var_dump($_POST);
+	var_dump($_POST);
 
 	// check if there are any input empty
 	$error = false;
@@ -28,29 +28,76 @@
 		'email' => FILTER_VALIDATE_EMAIL,
 		'pw' => FILTER_SANITIZE_STRING,
 	);
+	// ? how to check errors with this fuctions
 
 	$inputs = filter_input_array(INPUT_POST, $args);
 	//var_dump($inputs);
 
-	// create password-hash
-	$inputs['pw'] = password_hash($inputs['pw'], PASSWORD_DEFAULT);
-	//var_dump($inputs['pw']);
+	switch ($_POST['action']) {
+		case 'signin':
 
-	try {
-		// ! check if email or user already exists
+			echo 'Are you tryin g to sign in , mdr';
 
-		$req = $db -> prepare("INSERT INTO users (pseudo, email, pw) VALUES (:pseudo, :email, :pw)");
-		$res = $req -> execute(array(
-				'pseudo' => $inputs['pseudo'],
-				'email' => $inputs['email'],
-				'pw' => $inputs['pw']
-			));
-		var_dump($res);
-	} catch (Exception $e){
-		die('Error: '.$e->getMessage());
+			try {
+				// prepare req
+				$req = $db -> query("SELECT pw FROM users WHERE pseudo = '".$inputs['pseudo']."'");
+				$hash = $req -> fetchColumn();
+
+				echo '<pre>';
+				var_dump($hash);
+				echo '</pre>';
+				
+			} catch (Exception $e){
+				die('Error: '.$e->getMessage());
+			}
+
+
+			if (password_verify($inputs['pw'], $hash)) { 
+			    echo 'Password is valid!'; 
+			} else { 
+			    echo 'Invalid password.'; 
+			} 
+
+			
+
+			break;
+
+		case 'signup':
+			// create password-hash
+
+			//$inputs['pw'] = PDO::quote($inputs['pw']);
+			$inputs['pw'] = password_hash($inputs['pw'], PASSWORD_DEFAULT);
+			//var_dump($inputs['pw']);
+
+			try {
+				// ! check if email or user already exists
+
+				$req = $db -> prepare("INSERT INTO users (pseudo, email, pw) VALUES (:pseudo, :email, :pw)");
+				$res = $req -> execute(array(
+						'pseudo' => $inputs['pseudo'],
+						'email' => $inputs['email'],
+						'pw' => $inputs['pw']
+					));
+				var_dump($res);
+			} catch (Exception $e){
+				die('Error: '.$e->getMessage());
+			}
+
+
+			// if user register in db save value in session
+			$_SESSION['pseudo'] = $inputs['pseudo'];
+			$_SESSION['pw'] = $inputs['pw'];
+			break;
+
+		case 'signout':
+			echo 'Are you tryin g to sign out , mdr';
+			unset($_SESSION['pw']);
+			break;
+
+		default:
+			# code...
+			break;
 	}
 
-
-	// if user register in db save value in session
-	$_SESSION['pseudo'] = $inputs['pseudo'];
-	$_SESSION['pw'] = $inputs['pw'];
+	
+	

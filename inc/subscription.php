@@ -6,7 +6,7 @@
 		return;
 	}
 
-	var_dump($_POST);
+	//var_dump($_POST);
 
 	// check if there are any input empty
 	$error = false;
@@ -27,6 +27,7 @@
 		'pseudo' => FILTER_SANITIZE_STRING,
 		'email' => FILTER_VALIDATE_EMAIL,
 		'pw' => FILTER_SANITIZE_STRING,
+		'msg' => FILTER_SANITIZE_STRING
 	);
 	// ? how to check errors with this fuctions
 
@@ -40,12 +41,10 @@
 
 			try {
 				// prepare req
-				$req = $db -> query("SELECT pw FROM users WHERE pseudo = '".$inputs['pseudo']."'");
+				$req = $db -> prepare("SELECT pw FROM users WHERE pseudo = ?");
+				$req -> execute(array($inputs['pseudo']));
 				$hash = $req -> fetchColumn();
-
-				echo '<pre>';
-				var_dump($hash);
-				echo '</pre>';
+				$req->closeCursor();
 				
 			} catch (Exception $e){
 				die('Error: '.$e->getMessage());
@@ -54,11 +53,13 @@
 
 			if (password_verify($inputs['pw'], $hash)) { 
 			    echo 'Password is valid!'; 
+			    // if user registed in db save value in session
+			    $_SESSION['pseudo'] = $inputs['pseudo'];
+			    $_SESSION['pw'] = $inputs['pw'];
+
 			} else { 
 			    echo 'Invalid password.'; 
 			} 
-
-			
 
 			break;
 
@@ -84,14 +85,34 @@
 			}
 
 
-			// if user register in db save value in session
+			// if user registed in db save value in session
 			$_SESSION['pseudo'] = $inputs['pseudo'];
 			$_SESSION['pw'] = $inputs['pw'];
+
 			break;
 
 		case 'signout':
-			echo 'Are you tryin g to sign out , mdr';
-			unset($_SESSION['pw']);
+
+			session_destroy();
+			break;
+
+		case 'send':
+
+			$inputs['msg'] = trim($inputs['msg']);
+
+			if(! empty($inputs['msg'])) {
+			 	try {
+
+			 		$req = $db -> prepare("INSERT INTO msgs (content, moment, user_id) VALUES (:content, NOW(), (SELECT id FROM users WHERE pseudo = :pseudo))");
+			 		$res = $req -> execute(array(
+			 				'content' => $inputs['msg'],
+			 				'pseudo' => $_SESSION['pseudo']
+			 			));
+			 	} catch (Exception $e){
+			 		die('Error: '.$e->getMessage());
+			 	}
+			}
+			
 			break;
 
 		default:
@@ -100,4 +121,8 @@
 	}
 
 	
+	
+
+	
+		
 	

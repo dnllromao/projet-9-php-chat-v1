@@ -1,4 +1,8 @@
-<?php include 'pdo.php'; ?>
+<?php include 'pdo.php'; 
+
+	$req = $db -> query("SELECT * FROM (SELECT msgs.id AS id, msgs.content AS content, HOUR(msgs.moment) AS hour, MINUTE(msgs.moment) AS minutes, users.pseudo AS user FROM msgs INNER JOIN users ON msgs.user_id = users.id ORDER BY msgs.id DESC LIMIT 10) AS new ORDER BY id ASC");
+
+?>
 
 	<!DOCTYPE html>
 	<html lang="en">
@@ -8,8 +12,6 @@
 	<body>
 		<ul class="inner-content">
 		<?php
-
-		$req = $db -> query("SELECT * FROM (SELECT msgs.id AS id, msgs.content AS content, HOUR(msgs.moment) AS hour, MINUTE(msgs.moment) AS minutes, users.pseudo AS user FROM msgs INNER JOIN users ON msgs.user_id = users.id ORDER BY msgs.id DESC LIMIT 10) AS new ORDER BY id ASC");
 
 		while ($row = $req -> fetch()) : ?>
 		

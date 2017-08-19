@@ -48,8 +48,8 @@
 			</form>
 		</div>
 		<div class="chat">
-			<iframe src="inc/conversation.php" class="frame"></iframe>
-			<iframe src="inc/input.php" class="frame" id="input" frameBorder="0"></iframe>
+			<iframe src="inc/conversation.php"></iframe>
+			<iframe src="inc/input.php" id="input" frameBorder="0"></iframe>
 		</div>
 
 	<?php endif; ?>

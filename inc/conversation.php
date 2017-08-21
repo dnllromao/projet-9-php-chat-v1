@@ -3,6 +3,7 @@
 	namespace Emojione; // remenber this php case
 
 	include 'pdo.php';
+	// https://github.com/emojione/emojione
 	include __DIR__.'/emojione/php/autoload.php';
 
 	$client = new Client(new Ruleset());

@@ -33,6 +33,7 @@ Better:
 - check sql data types
 - check if user is online/offline
 - Avoir ecrit qui est online, genre 'Hello, Dnll'
+- Ranger lib emojione inside folder lib
 
 UX inspiration:
 https://codepen.io/marcobiedermann/pen/rohwn

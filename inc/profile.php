@@ -1,6 +1,7 @@
 <?php 
 	include 'pdo.php';
 	include '../lib/claviska/SimpleImage.php';
+
 	echo '<pre>';
 	var_dump($_FILES);
 	echo '</pre>';
@@ -41,6 +42,21 @@
 	        } else {
 	            echo "Sorry, there was an error uploading your file.";
 	        }
+
+	    try {
+	      // Create a new SimpleImage object
+	      $image = new \claviska\SimpleImage();
+
+	      // Magic! ✨
+	      $image
+	        ->fromFile('../')                     // load image.jpg
+	        ->toFile('new-image.png', 'image/png')      // convert to PNG and save a copy to new-image.png
+
+	      // And much more! 💪
+	    } catch(Exception $err) {
+	      // Handle errors
+	      echo $err->getMessage();
+	    }
 
 	}
 ?>
